@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base target="_top">
+    <link rel="stylesheet" href="style.css">
+    <script>
+        var day = document.getElementById("day");
+
+        function fail() {
+            console.log("FAIL!!!");
+        }
+
+        function process(data) {
+            if (!day.value == "") google.script.run.addToCan(day.value, data.id, data.value);
+        }
+
+        function refresh() {
+            google.script.host.close();
+            window.setInterval(function () {
+                google.script.run.launchSideBar();
+            }, 500);
+        }
+
+        function getCannedResponses(day) {
+            console.log(day.value);
+            if (day.value == "") return;
+            var data = google.script.run.withSuccessHandler(fillSheets).getCan(day.value);
+        }
+
+        function fillSheets(data) {
+            console.log(typeof data, data)
+            if (typeof data == "string") data = JSON.parse(data);
+            console.log(data);
+            for (var i in data) document.getElementById(i).value = data[i];
+        }
+
+        function saveFeedback() {
+            var day = document.getElementById("day");
+            var cans = document.getElementsByClassName("can");
+            var can = {};
+            for (var i in cans) {
+                console.log(cans[i]);
+                if (cans[i].id != undefined) {
+                    can[cans[i].id] = cans[i].value;
+                    if (cans[i].value.trim() == "") {
+                        google.script.run.alert("Please fill out ALL canned responses before submitting the data.");
+                        return;
+                    }
+                }
+            }
+            google.script.run.setCan(day.value, can);
+        }
+
+        function generateSpreadsheetReport() {
+            console.log("RUN!");
+            var day = document.getElementById("day");
+            if (!day.value) day.value = "";
+            var course = document.getElementById("courses");
+            var stud = document.getElementById("stud");
+            google.script.run.sortByParameter(day.value, course.value, stud.value);
+        }
+    </script>
+</head>
+
+<body>
+    <h1>Test</h1>
+    <div class="target" id="target"> </div>
+    <div class="target" id="stud"></div>
+    <h1>Day</h1>
+    <input id="day" onchange="getCannedResponses(this)" type="text" placeholder="Day(s)">
+    <h1>Courses</h1>
+    <input id="courses" type="text" placeholder="course(s)">
+    <h1>Filter</h1>
+    <input id="stud" type="text" placeholder="student(s)">
+    <h1>Sub-filter</h1>
+    <input type="text" placeholder="sub-filter">
+    <div class = "panel">
+    <div class="btn" onclick="generateSpreadsheetReport()">View Responses</div>
+    <div class = "btn" onclick="saveFeedback()">Save Responses</div>
+    </div>
+    <h1>Canned Response 1</h1>
+    <textarea class="can" id="can1" placeholder="Canned Response 1" cols='30' rows='6'></textarea>
+    <h1>Canned Response 2</h1>
+    <textarea class="can" id="can2" placeholder="Canned Response 2" cols='30' rows='6'></textarea>
+    <h1>Canned Response 3</h1>
+    <textarea class="can" id="can3" placeholder="Canned Response 3" cols='30' rows='6'></textarea>
+    <h1>Canned Response 4</h1>
+    <textarea class="can" id="can4" placeholder="Canned Response 4" cols='30' rows='6'></textarea>
+    <h1>Canned Response 5</h1>
+    <textarea class="can" id="can5" placeholder="Canned Response 5" cols='30' rows='6'></textarea>
+
+    <!-- dropdown menu script  -->
+    <script>
+        var DropDown=function(a,l,n){this.options=a;this.parent=l;this.id=n;var h=document.createElement("div"),g=document.createElement("ul");document.onclick=function(a){h.innerHTML=""};var c="",p=0,f;for(f in a)if(0>c.indexOf(a[f])&&(c+=a[f]+", ",p++),2<p)break;var c=c+"etc.",k=document.createElement("textarea");k.id=n;k.onkeyup=function(c){console.log("TRIGGER",c);g.innerHTML="";h.innerHTML="";var b=!1,d=c.target.value.toLowerCase().split(","),f;for(f in d){g.innerHTML="";var b=!1,m;for(m in a){var e=new RegExp(d[f].trim(),"g");null!=a[m].toLowerCase().match(e)&&(b=!0,e=document.createElement("li"),e.appendChild(document.createTextNode(a[m])),e.onclick=function(a){k.focus();var b="";d[f]=a.target.textContent;for(var e in d)b+=parseInt(e)<d.length-1?d[e].trim().toLowerCase()+", ":d[e].trim().toLowerCase();console.log(a.target.textContent);c.target.value=b;g.innerHTML="";h.innerHTML=""},g.appendChild(e))}}b||(d=document.createTextNode("No items foud!"),b=document.createElement("li"),b.className="err",b.appendChild(d),g.appendChild(b));h.appendChild(g);document.getElementById(l).appendChild(h)};k.placeholder=c;document.getElementById(l).appendChild(k)};
+    </script>
+</body>
+
+</html>
