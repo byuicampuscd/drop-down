@@ -1,0 +1,11 @@
+{
+  "name": "drop-down",
+  "version": "1.0.0",
+  "description": "This is code used for making HTML drop down menus.",
+  "main": "",
+  "scripts": {
+    "test": "NA"
+  },
+  "author": "UNKNOWN",
+  "license": "MIT"
+}
